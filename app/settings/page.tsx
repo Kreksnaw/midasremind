@@ -48,93 +48,93 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="p-8 max-w-3xl">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-800">Settings</h1>
+    <div className="p-4 sm:p-8 max-w-3xl">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Settings</h1>
         <p className="text-slate-500 text-sm mt-1">Manage your shop's information and preferences.</p>
       </div>
 
-      <form onSubmit={handleSave} className="space-y-6">
+      <form onSubmit={handleSave} className="space-y-4 sm:space-y-6">
         {/* Shop Info */}
         <SectionCard title="Shop Information" icon={Store}>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="col-span-2">
-              <Field label="Shop Name">
+          <div className="space-y-4">
+            <Field label="Shop Name">
+              <input
+                className={inputClass}
+                value={shop.name}
+                onChange={e => setShop(s => ({ ...s, name: e.target.value }))}
+              />
+            </Field>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Field label="Phone Number">
                 <input
                   className={inputClass}
-                  value={shop.name}
-                  onChange={e => setShop(s => ({ ...s, name: e.target.value }))}
+                  value={shop.phone}
+                  onChange={e => setShop(s => ({ ...s, phone: e.target.value }))}
+                />
+              </Field>
+              <Field label="SMS Sender Name">
+                <input
+                  className={inputClass}
+                  value={shop.smsSenderName}
+                  onChange={e => setShop(s => ({ ...s, smsSenderName: e.target.value }))}
+                  maxLength={11}
                 />
               </Field>
             </div>
-            <Field label="Phone Number">
-              <input
-                className={inputClass}
-                value={shop.phone}
-                onChange={e => setShop(s => ({ ...s, phone: e.target.value }))}
-              />
-            </Field>
-            <Field label="SMS Sender Name">
-              <input
-                className={inputClass}
-                value={shop.smsSenderName}
-                onChange={e => setShop(s => ({ ...s, smsSenderName: e.target.value }))}
-                maxLength={11}
-              />
-            </Field>
           </div>
         </SectionCard>
 
         {/* Address */}
         <SectionCard title="Location" icon={MapPin}>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="col-span-2">
-              <Field label="Street Address">
-                <input
-                  className={inputClass}
-                  value={shop.address}
-                  onChange={e => setShop(s => ({ ...s, address: e.target.value }))}
-                />
-              </Field>
-            </div>
-            <Field label="City">
+          <div className="space-y-4">
+            <Field label="Street Address">
               <input
                 className={inputClass}
-                value={shop.city}
-                onChange={e => setShop(s => ({ ...s, city: e.target.value }))}
+                value={shop.address}
+                onChange={e => setShop(s => ({ ...s, address: e.target.value }))}
               />
             </Field>
-            <div className="grid grid-cols-2 gap-3">
-              <Field label="State">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Field label="City">
                 <input
                   className={inputClass}
-                  value={shop.state}
-                  onChange={e => setShop(s => ({ ...s, state: e.target.value }))}
-                  maxLength={2}
+                  value={shop.city}
+                  onChange={e => setShop(s => ({ ...s, city: e.target.value }))}
                 />
               </Field>
-              <Field label="ZIP">
-                <input
-                  className={inputClass}
-                  value={shop.zip}
-                  onChange={e => setShop(s => ({ ...s, zip: e.target.value }))}
-                />
-              </Field>
+              <div className="grid grid-cols-2 gap-3">
+                <Field label="State">
+                  <input
+                    className={inputClass}
+                    value={shop.state}
+                    onChange={e => setShop(s => ({ ...s, state: e.target.value }))}
+                    maxLength={2}
+                  />
+                </Field>
+                <Field label="ZIP">
+                  <input
+                    className={inputClass}
+                    value={shop.zip}
+                    onChange={e => setShop(s => ({ ...s, zip: e.target.value }))}
+                  />
+                </Field>
+              </div>
             </div>
           </div>
         </SectionCard>
 
         {/* Business Hours */}
         <SectionCard title="Business Hours" icon={Clock}>
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {daysOfWeek.map((day) => (
-              <div key={day} className="flex items-center gap-4">
-                <span className="text-sm text-slate-600 font-medium w-24 capitalize">{day}</span>
+              <div key={day} className="flex items-center gap-3">
+                <span className="text-sm text-slate-600 font-medium w-20 sm:w-24 capitalize shrink-0">{day}</span>
                 <input
-                  className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-800"
+                  className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-800 min-w-0"
                   value={shop.hours[day]}
                   onChange={e => updateHours(day, e.target.value)}
-                  placeholder="e.g. 8:00 AM – 5:00 PM or Closed"
+                  placeholder="e.g. 8:00 AM – 5:00 PM"
                 />
               </div>
             ))}
@@ -149,7 +149,7 @@ export default function SettingsPage() {
             </p>
             <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
               <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">Default Reminder Message Preview</p>
-              <p className="text-sm text-slate-700 italic">
+              <p className="text-sm text-slate-700 italic leading-relaxed">
                 "Hi [Customer Name], your [Service Type] is due soon at {shop.name}. Call us at {shop.phone} to schedule. Reply STOP to opt out."
               </p>
             </div>
@@ -157,10 +157,10 @@ export default function SettingsPage() {
         </SectionCard>
 
         {/* Save Button */}
-        <div className="flex justify-end">
+        <div className="flex justify-stretch sm:justify-end">
           <button
             type="submit"
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-sm ${
+            className={`flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 sm:py-2.5 rounded-lg text-sm font-semibold transition-all shadow-sm ${
               saved
                 ? 'bg-green-600 text-white'
                 : 'bg-[#0f2744] text-white hover:bg-[#1a3a60]'

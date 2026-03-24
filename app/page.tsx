@@ -25,14 +25,14 @@ function StatCard({
   dark?: boolean;
 }) {
   return (
-    <div className={`rounded-xl border p-5 flex items-start gap-4 shadow-sm ${dark ? 'bg-[#0f2744] border-[#1a3a60]' : 'bg-white border-slate-200'}`}>
-      <div className={`rounded-lg p-2.5 ${dark ? 'bg-white/10' : 'bg-slate-100'}`}>
-        <Icon size={20} className={dark ? 'text-[#e8a020]' : 'text-slate-600'} />
+    <div className={`rounded-xl border p-3.5 sm:p-5 flex items-start gap-3 sm:gap-4 shadow-sm ${dark ? 'bg-[#0f2744] border-[#1a3a60]' : 'bg-white border-slate-200'}`}>
+      <div className={`rounded-lg p-2 sm:p-2.5 shrink-0 ${dark ? 'bg-white/10' : 'bg-slate-100'}`}>
+        <Icon size={18} className={dark ? 'text-[#e8a020]' : 'text-slate-600'} />
       </div>
-      <div>
-        <p className={`text-2xl font-bold ${dark ? 'text-white' : 'text-slate-800'}`}>{value}</p>
-        <p className={`text-sm font-medium ${dark ? 'text-blue-300' : 'text-slate-500'}`}>{label}</p>
-        {sub && <p className={`text-xs mt-0.5 ${dark ? 'text-blue-400' : 'text-slate-400'}`}>{sub}</p>}
+      <div className="min-w-0">
+        <p className={`text-xl sm:text-2xl font-bold leading-tight ${dark ? 'text-white' : 'text-slate-800'}`}>{value}</p>
+        <p className={`text-xs sm:text-sm font-medium mt-0.5 ${dark ? 'text-blue-300' : 'text-slate-500'}`}>{label}</p>
+        {sub && <p className={`text-xs mt-0.5 hidden sm:block ${dark ? 'text-blue-400' : 'text-slate-400'}`}>{sub}</p>}
       </div>
     </div>
   );
@@ -57,23 +57,23 @@ export default function DashboardPage() {
   const upcomingDue = reminders.filter((r) => r.status === 'pending').length;
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-800">Dashboard</h1>
+    <div className="p-4 sm:p-8">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Dashboard</h1>
         <p className="text-slate-500 text-sm mt-1">Welcome back — here's what's happening at Midas Sunnyvale.</p>
       </div>
 
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
         <StatCard label="Total Customers" value={customers.length} icon={Users} sub="In your database" />
         <StatCard label="Reminders Sent" value={sentThisMonth} icon={Bell} sub="This month" dark />
         <StatCard label="Upcoming Due" value={upcomingDue} icon={CalendarClock} sub="Pending reminders" />
         <StatCard label="Open Rate" value="63%" icon={TrendingUp} sub="Last 30 days" />
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
         {/* Upcoming Reminders */}
         <div className="xl:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm">
-          <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+          <div className="px-4 sm:px-6 py-4 border-b border-slate-100 flex items-center justify-between">
             <h2 className="font-semibold text-slate-800">Upcoming Reminders</h2>
             <span className="text-xs text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full font-medium">
               {upcomingDue} pending
@@ -91,19 +91,19 @@ export default function DashboardPage() {
                 const isSoon = daysUntil <= 14;
 
                 return (
-                  <div key={r.id} className="px-6 py-4 flex items-center gap-4">
+                  <div key={r.id} className="px-4 sm:px-6 py-3.5 flex items-center gap-3 sm:gap-4">
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-slate-800">{r.customerName}</p>
-                      <p className="text-xs text-slate-500">{r.serviceType}</p>
+                      <p className="text-sm font-semibold text-slate-800 truncate">{r.customerName}</p>
+                      <p className="text-xs text-slate-500 truncate">{r.serviceType}</p>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right shrink-0">
                       <p className="text-xs text-slate-400 mb-0.5">Due</p>
                       <p className={`text-sm font-semibold ${isOverdue ? 'text-red-600' : isSoon ? 'text-amber-600' : 'text-slate-700'}`}>
                         {due.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       </p>
                     </div>
                     {(isOverdue || isSoon) && (
-                      <AlertCircle size={15} className={isOverdue ? 'text-red-400' : 'text-amber-400'} />
+                      <AlertCircle size={15} className={`shrink-0 ${isOverdue ? 'text-red-400' : 'text-amber-400'}`} />
                     )}
                   </div>
                 );
@@ -113,7 +113,7 @@ export default function DashboardPage() {
 
         {/* Activity Feed */}
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
-          <div className="px-6 py-4 border-b border-slate-100">
+          <div className="px-4 sm:px-6 py-4 border-b border-slate-100">
             <h2 className="font-semibold text-slate-800">Recent Activity</h2>
           </div>
           <div className="divide-y divide-slate-100">
@@ -121,7 +121,7 @@ export default function DashboardPage() {
               const Icon = activityIcons[item.icon] ?? Bell;
               const colorClass = activityColors[item.type] ?? 'bg-slate-100 text-slate-600';
               return (
-                <div key={item.id} className="px-5 py-3.5 flex items-start gap-3">
+                <div key={item.id} className="px-4 sm:px-5 py-3.5 flex items-start gap-3">
                   <div className={`rounded-full p-1.5 mt-0.5 shrink-0 ${colorClass}`}>
                     <Icon size={12} />
                   </div>

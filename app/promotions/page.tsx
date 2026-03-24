@@ -39,92 +39,99 @@ function CreatePromoModal({ onClose, onAdd }: { onClose: () => void; onAdd: (p: 
     onClose();
   }
 
+  const promoInputCls = "mt-1 w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500";
+  const promoLabelCls = "text-xs font-medium text-slate-500 uppercase tracking-wide";
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden">
-        <div className="bg-[#0f2744] px-6 py-5 flex items-center justify-between">
+      <div className="relative bg-white w-full sm:max-w-lg sm:mx-4 sm:rounded-2xl rounded-t-2xl shadow-2xl flex flex-col max-h-[92vh] sm:max-h-[90vh]">
+        {/* Sticky header */}
+        <div className="bg-[#0f2744] px-5 py-4 flex items-center justify-between rounded-t-2xl shrink-0">
           <div>
-            <h2 className="text-lg font-semibold text-white">Create Promotion</h2>
+            <h2 className="text-base sm:text-lg font-semibold text-white">Create Promotion</h2>
             <p className="text-blue-300 text-xs mt-0.5">Set up a new coupon campaign</p>
           </div>
-          <button onClick={onClose} className="text-blue-300 hover:text-white transition-colors">
+          <button onClick={onClose} className="text-blue-300 hover:text-white transition-colors p-1">
             <X size={20} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <div>
-            <label className="text-xs font-medium text-slate-500 uppercase tracking-wide">Promotion Title</label>
-            <input
-              required
-              className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={form.title}
-              onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-              placeholder="e.g. Spring Oil Change Special"
-            />
-          </div>
-
-          <div>
-            <label className="text-xs font-medium text-slate-500 uppercase tracking-wide">Discount</label>
-            <div className="flex mt-1 gap-2">
-              <select
-                className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                value={form.discountType}
-                onChange={e => setForm(f => ({ ...f, discountType: e.target.value }))}
-              >
-                <option value="amount">$ Amount off</option>
-                <option value="percent">% Percent off</option>
-                <option value="free">Free service</option>
-              </select>
-              {form.discountType !== 'free' && (
-                <input
-                  required
-                  type="number"
-                  min="1"
-                  className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={form.discountValue}
-                  onChange={e => setForm(f => ({ ...f, discountValue: e.target.value }))}
-                  placeholder={form.discountType === 'amount' ? '10' : '15'}
-                />
-              )}
+        {/* Scrollable form body */}
+        <div className="overflow-y-auto">
+          <form onSubmit={handleSubmit} className="p-5 space-y-4">
+            <div>
+              <label className={promoLabelCls}>Promotion Title</label>
+              <input
+                required
+                className={promoInputCls}
+                value={form.title}
+                onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+                placeholder="e.g. Spring Oil Change Special"
+              />
             </div>
-          </div>
 
-          <div>
-            <label className="text-xs font-medium text-slate-500 uppercase tracking-wide">Expiration Date</label>
-            <input
-              required
-              type="date"
-              className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={form.expirationDate}
-              onChange={e => setForm(f => ({ ...f, expirationDate: e.target.value }))}
-            />
-          </div>
+            <div>
+              <label className={promoLabelCls}>Discount</label>
+              <div className="flex mt-1 gap-2">
+                <select
+                  className="border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  value={form.discountType}
+                  onChange={e => setForm(f => ({ ...f, discountType: e.target.value }))}
+                >
+                  <option value="amount">$ Amount off</option>
+                  <option value="percent">% Percent off</option>
+                  <option value="free">Free service</option>
+                </select>
+                {form.discountType !== 'free' && (
+                  <input
+                    required
+                    type="number"
+                    min="1"
+                    className="flex-1 border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={form.discountValue}
+                    onChange={e => setForm(f => ({ ...f, discountValue: e.target.value }))}
+                    placeholder={form.discountType === 'amount' ? '10' : '15'}
+                  />
+                )}
+              </div>
+            </div>
 
-          <div>
-            <label className="text-xs font-medium text-slate-500 uppercase tracking-wide">SMS Message Text</label>
-            <textarea
-              required
-              rows={4}
-              className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-              value={form.message}
-              onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
-              placeholder="Write the text message customers will receive…"
-            />
-            <p className="text-xs text-slate-400 mt-1">{form.message.length}/160 characters</p>
-          </div>
+            <div>
+              <label className={promoLabelCls}>Expiration Date</label>
+              <input
+                required
+                type="date"
+                className={promoInputCls}
+                value={form.expirationDate}
+                onChange={e => setForm(f => ({ ...f, expirationDate: e.target.value }))}
+              />
+            </div>
 
-          <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="flex-1 border border-slate-200 text-slate-600 rounded-lg py-2.5 text-sm font-medium hover:bg-slate-50 transition-colors">
-              Cancel
-            </button>
-            <button type="submit" className="flex-1 bg-[#0f2744] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#1a3a60] transition-colors flex items-center justify-center gap-2">
-              <Plus size={15} />
-              Create Promotion
-            </button>
-          </div>
-        </form>
+            <div>
+              <label className={promoLabelCls}>SMS Message Text</label>
+              <textarea
+                required
+                rows={4}
+                className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                value={form.message}
+                onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
+                placeholder="Write the text message customers will receive…"
+              />
+              <p className="text-xs text-slate-400 mt-1">{form.message.length}/160 characters</p>
+            </div>
+
+            <div className="flex gap-3 pt-1 pb-1">
+              <button type="button" onClick={onClose} className="flex-1 border border-slate-200 text-slate-600 rounded-lg py-3 text-sm font-medium hover:bg-slate-50 transition-colors">
+                Cancel
+              </button>
+              <button type="submit" className="flex-1 bg-[#0f2744] text-white rounded-lg py-3 text-sm font-medium hover:bg-[#1a3a60] transition-colors flex items-center justify-center gap-2">
+                <Plus size={15} />
+                Create Promotion
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
@@ -138,7 +145,7 @@ export default function PromotionsPage() {
   const expired = promos.filter(p => p.status === 'expired');
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-8">
       {showModal && (
         <CreatePromoModal
           onClose={() => setShowModal(false)}
@@ -146,16 +153,16 @@ export default function PromotionsPage() {
         />
       )}
 
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5 sm:mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Promotions</h1>
-          <p className="text-slate-500 text-sm mt-1">Create and send coupon campaigns to your customers.</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Promotions</h1>
+          <p className="text-slate-500 text-sm mt-0.5">Create and send coupon campaigns to your customers.</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 bg-[#0f2744] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#1a3a60] transition-colors shadow-sm"
+          className="flex items-center justify-center gap-2 bg-[#0f2744] text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-[#1a3a60] transition-colors shadow-sm w-full sm:w-auto"
         >
-          <Plus size={16} />
+          <Plus size={15} />
           Create Promotion
         </button>
       </div>
@@ -198,17 +205,18 @@ export default function PromotionsPage() {
 function PromoCard({ promo, dimmed }: { promo: Promotion; dimmed?: boolean }) {
   return (
     <div className={`bg-white rounded-xl border shadow-sm overflow-hidden ${dimmed ? 'border-slate-200 opacity-70' : 'border-slate-200'}`}>
-      <div className="px-6 py-5 flex items-start gap-5">
+      <div className="px-4 sm:px-6 py-4 sm:py-5 flex items-start gap-3 sm:gap-5">
         {/* Icon */}
-        <div className={`rounded-xl p-3 shrink-0 ${dimmed ? 'bg-slate-100' : 'bg-[#e8a020]/10'}`}>
-          <Tag size={20} className={dimmed ? 'text-slate-400' : 'text-[#e8a020]'} />
+        <div className={`rounded-xl p-2.5 sm:p-3 shrink-0 mt-0.5 ${dimmed ? 'bg-slate-100' : 'bg-[#e8a020]/10'}`}>
+          <Tag size={18} className={dimmed ? 'text-slate-400' : 'text-[#e8a020]'} />
         </div>
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-4 flex-wrap">
-            <div>
-              <h3 className="font-semibold text-slate-800">{promo.title}</h3>
+          {/* Title + badge */}
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h3 className="font-semibold text-slate-800 leading-snug">{promo.title}</h3>
               <p className="text-sm text-slate-500 mt-0.5">{promo.discount}</p>
             </div>
             <span className={`text-xs px-2.5 py-1 rounded-full font-semibold shrink-0 ${
@@ -218,34 +226,41 @@ function PromoCard({ promo, dimmed }: { promo: Promotion; dimmed?: boolean }) {
             </span>
           </div>
 
-          <div className="mt-3 bg-slate-50 rounded-lg px-4 py-3 border border-slate-100">
+          {/* Message preview */}
+          <div className="mt-3 bg-slate-50 rounded-lg px-3 sm:px-4 py-2.5 sm:py-3 border border-slate-100">
             <p className="text-xs text-slate-500 font-medium mb-1 uppercase tracking-wide">Message Preview</p>
-            <p className="text-sm text-slate-700 italic">"{promo.message}"</p>
+            <p className="text-xs sm:text-sm text-slate-700 italic leading-relaxed">"{promo.message}"</p>
           </div>
 
-          <div className="flex items-center gap-6 mt-4 flex-wrap">
+          {/* Stats row */}
+          <div className="grid grid-cols-3 sm:flex sm:items-center sm:gap-6 gap-3 mt-4">
             <div>
               <p className="text-xs text-slate-400">Sent to</p>
-              <p className="text-sm font-semibold text-slate-700">{promo.sentCount} customers</p>
+              <p className="text-sm font-semibold text-slate-700">{promo.sentCount}</p>
             </div>
             <div>
               <p className="text-xs text-slate-400">Created</p>
-              <p className="text-sm font-semibold text-slate-700">{formatDate(promo.createdAt)}</p>
+              <p className="text-sm font-semibold text-slate-700">
+                {new Date(promo.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+              </p>
             </div>
             <div>
               <p className="text-xs text-slate-400">Expires</p>
               <p className={`text-sm font-semibold ${promo.status === 'expired' ? 'text-red-500' : 'text-slate-700'}`}>
-                {formatDate(promo.expirationDate)}
+                {new Date(promo.expirationDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' })}
               </p>
             </div>
+          </div>
 
-            {promo.status === 'active' && (
-              <button className="ml-auto flex items-center gap-1.5 bg-[#0f2744] text-white px-4 py-2 rounded-lg text-xs font-semibold hover:bg-[#1a3a60] transition-colors">
+          {/* Send button — full width on mobile */}
+          {promo.status === 'active' && (
+            <div className="mt-3 pt-3 border-t border-slate-100 sm:border-0 sm:mt-0 sm:pt-0">
+              <button className="flex items-center justify-center sm:justify-start gap-1.5 bg-[#0f2744] text-white px-4 py-2.5 rounded-lg text-xs font-semibold hover:bg-[#1a3a60] transition-colors w-full sm:w-auto sm:ml-auto">
                 <Send size={12} />
                 Send Campaign
               </button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

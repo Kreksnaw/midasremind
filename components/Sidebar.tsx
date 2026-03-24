@@ -20,13 +20,13 @@ const navItems = [
   { href: '/settings', label: 'Settings', icon: Settings },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ onNavClick }: { onNavClick?: () => void }) {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 bg-[#0f2744] flex flex-col h-full shrink-0">
+    <div className="w-64 bg-[#0f2744] flex flex-col h-full">
       {/* Logo / Brand */}
-      <div className="px-6 py-5 border-b border-white/10">
+      <div className="px-6 py-5 border-b border-white/10 shrink-0">
         <div className="flex items-center gap-2.5">
           <div className="bg-[#e8a020] rounded-lg p-1.5">
             <Wrench size={18} className="text-white" />
@@ -39,7 +39,7 @@ export default function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 space-y-0.5">
+      <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
         {navItems.map(({ href, label, icon: Icon }) => {
           const isActive =
             href === '/' ? pathname === '/' : pathname.startsWith(href);
@@ -47,6 +47,7 @@ export default function Sidebar() {
             <Link
               key={href}
               href={href}
+              onClick={onNavClick}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors group ${
                 isActive
                   ? 'bg-white/15 text-white'
@@ -62,11 +63,11 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="px-5 py-4 border-t border-white/10">
+      <div className="px-5 py-4 border-t border-white/10 shrink-0">
         <p className="text-blue-400 text-xs">725 E El Camino Real</p>
         <p className="text-blue-400 text-xs">Sunnyvale, CA 94087</p>
         <p className="text-blue-300 text-xs mt-1 font-medium">(408) 498-7075</p>
       </div>
-    </aside>
+    </div>
   );
 }
