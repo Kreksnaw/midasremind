@@ -9,7 +9,8 @@ import {
   TrendingUp,
   AlertCircle,
 } from 'lucide-react';
-import { customers, reminders, activityFeed } from '@/app/data/sample';
+import { createClient } from '@/lib/supabase';
+import { activityFeed } from '@/app/data/sample';
 
 function StatCard({
   label,
@@ -52,19 +53,29 @@ const activityColors: Record<string, string> = {
   customer_added: 'bg-purple-100 text-purple-700',
 };
 
-export default function DashboardPage() {
-  const sentThisMonth = reminders.filter((r) => r.status === 'sent' || r.status === 'opened').length;
-  const upcomingDue = reminders.filter((r) => r.status === 'pending').length;
+export default async function DashboardPage() {
+  const supabase = createClient();
+
+  const [{ count: customerCount }, { data: reminders }, { data: shopSettings }] = await Promise.all([
+    supabase.from('customers').select('*', { count: 'exact', head: true }),
+    supabase.from('reminders').select('id, customer_name, service_type, due_date, status, sent_at').order('due_date', { ascending: true }),
+    supabase.from('shop_settings').select('name').eq('id', 1).single(),
+  ]);
+
+  const reminderList = reminders ?? [];
+  const sentThisMonth = reminderList.filter((r) => r.status === 'sent' || r.status === 'opened').length;
+  const upcomingDue = reminderList.filter((r) => r.status === 'pending').length;
+  const shopName = shopSettings?.name ?? 'Midas Sunnyvale';
 
   return (
     <div className="p-4 sm:p-8">
       <div className="mb-6 sm:mb-8">
         <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Dashboard</h1>
-        <p className="text-slate-500 text-sm mt-1">Welcome back — here's what's happening at Midas Sunnyvale.</p>
+        <p className="text-slate-500 text-sm mt-1">Welcome back — here&apos;s what&apos;s happening at {shopName}.</p>
       </div>
 
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
-        <StatCard label="Total Customers" value={customers.length} icon={Users} sub="In your database" />
+        <StatCard label="Total Customers" value={customerCount ?? 0} icon={Users} sub="In your database" />
         <StatCard label="Reminders Sent" value={sentThisMonth} icon={Bell} sub="This month" dark />
         <StatCard label="Upcoming Due" value={upcomingDue} icon={CalendarClock} sub="Pending reminders" />
         <StatCard label="Open Rate" value="63%" icon={TrendingUp} sub="Last 30 days" />
@@ -80,11 +91,11 @@ export default function DashboardPage() {
             </span>
           </div>
           <div className="divide-y divide-slate-100">
-            {reminders
+            {reminderList
               .filter((r) => r.status === 'pending')
               .slice(0, 5)
               .map((r) => {
-                const due = new Date(r.dueDate);
+                const due = new Date(r.due_date);
                 const now = new Date();
                 const daysUntil = Math.ceil((due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
                 const isOverdue = daysUntil < 0;
@@ -93,8 +104,8 @@ export default function DashboardPage() {
                 return (
                   <div key={r.id} className="px-4 sm:px-6 py-3.5 flex items-center gap-3 sm:gap-4">
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-slate-800 truncate">{r.customerName}</p>
-                      <p className="text-xs text-slate-500 truncate">{r.serviceType}</p>
+                      <p className="text-sm font-semibold text-slate-800 truncate">{r.customer_name}</p>
+                      <p className="text-xs text-slate-500 truncate">{r.service_type}</p>
                     </div>
                     <div className="text-right shrink-0">
                       <p className="text-xs text-slate-400 mb-0.5">Due</p>
