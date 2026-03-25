@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useCallback } from 'react';
 import { Send, Clock, CheckCircle, Eye, Bell } from 'lucide-react';
 import { sendReminder, sendAllPendingReminders } from '@/lib/actions';
 import type { Reminder } from '@/app/data/sample';
+import Toast, { type ToastMessage } from '@/components/Toast';
 
 type StatusFilter = 'all' | 'pending' | 'sent' | 'opened';
 
@@ -13,16 +14,11 @@ const statusConfig = {
   opened: { label: 'Opened', icon: Eye, class: 'bg-green-100 text-green-700' },
 };
 
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('en-US', {
-    month: 'short', day: 'numeric', year: 'numeric',
-  });
-}
-
 export default function RemindersClient({ initialReminders }: { initialReminders: Reminder[] }) {
   const [reminders, setReminders] = useState<Reminder[]>(initialReminders);
   const [filter, setFilter] = useState<StatusFilter>('all');
   const [isPending, startTransition] = useTransition();
+  const [toast, setToast] = useState<ToastMessage | null>(null);
 
   const filtered = filter === 'all' ? reminders : reminders.filter(r => r.status === filter);
 
@@ -34,27 +30,61 @@ export default function RemindersClient({ initialReminders }: { initialReminders
   };
 
   const today = new Date().toISOString().split('T')[0];
+  const dismissToast = useCallback(() => setToast(null), []);
 
   function handleSendNow(id: string) {
-    setReminders(prev =>
-      prev.map(r => r.id === id ? { ...r, status: 'sent', sentAt: today } : r)
-    );
     startTransition(async () => {
-      await sendReminder(id);
+      const result = await sendReminder(id);
+      if (result.success) {
+        setReminders(prev =>
+          prev.map(r => r.id === id ? { ...r, status: 'sent', sentAt: today } : r)
+        );
+        setToast({ type: 'success', title: 'SMS sent successfully' });
+      } else {
+        setToast({
+          type: 'error',
+          title: 'Failed to send SMS',
+          detail: result.error,
+        });
+      }
     });
   }
 
   function handleSendAllPending() {
-    setReminders(prev =>
-      prev.map(r => r.status === 'pending' ? { ...r, status: 'sent', sentAt: today } : r)
-    );
     startTransition(async () => {
-      await sendAllPendingReminders();
+      const result = await sendAllPendingReminders();
+      if (result.sent > 0) {
+        setReminders(prev =>
+          prev.map(r => {
+            if (r.status !== 'pending') return r;
+            // Only optimistically mark as sent those that succeeded
+            // We don't have per-ID results, so mark all pending as sent and rely on server revalidation
+            return { ...r, status: 'sent' as const, sentAt: today };
+          })
+        );
+      }
+      if (result.failed === 0) {
+        setToast({ type: 'success', title: `${result.sent} SMS${result.sent === 1 ? '' : 's'} sent successfully` });
+      } else if (result.sent === 0) {
+        setToast({
+          type: 'error',
+          title: `Failed to send ${result.failed} SMS${result.failed === 1 ? '' : 's'}`,
+          detail: result.errors[0],
+        });
+      } else {
+        setToast({
+          type: 'error',
+          title: `${result.sent} sent, ${result.failed} failed`,
+          detail: result.errors[0],
+        });
+      }
     });
   }
 
   return (
     <div className="p-4 sm:p-8">
+      {toast && <Toast toast={toast} onClose={dismissToast} />}
+
       {/* Page header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5 sm:mb-6">
         <div>

@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useCallback } from 'react';
 import { Plus, Tag, Send, X, CheckCircle, Clock } from 'lucide-react';
 import { createPromotion, sendCampaign } from '@/lib/actions';
 import type { Promotion } from '@/app/data/sample';
+import Toast, { type ToastMessage } from '@/components/Toast';
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('en-US', {
@@ -134,7 +135,7 @@ function CreatePromoModal({ onClose, onAdd }: { onClose: () => void; onAdd: (p: 
   );
 }
 
-function PromoCard({ promo, dimmed, onSend }: { promo: Promotion; dimmed?: boolean; onSend?: () => void }) {
+function PromoCard({ promo, dimmed, onSend, sendDisabled }: { promo: Promotion; dimmed?: boolean; onSend?: () => void; sendDisabled?: boolean }) {
   return (
     <div className={`bg-white rounded-xl border shadow-sm overflow-hidden ${dimmed ? 'border-slate-200 opacity-70' : 'border-slate-200'}`}>
       <div className="px-4 sm:px-6 py-4 sm:py-5 flex items-start gap-3 sm:gap-5">
@@ -189,7 +190,8 @@ function PromoCard({ promo, dimmed, onSend }: { promo: Promotion; dimmed?: boole
             <div className="mt-3 pt-3 border-t border-slate-100">
               <button
                 onClick={onSend}
-                className="flex items-center justify-center gap-1.5 bg-[#0f2744] text-white px-4 py-3 sm:py-2.5 rounded-lg text-sm sm:text-xs font-semibold hover:bg-[#1a3a60] transition-colors w-full sm:w-auto"
+                disabled={sendDisabled}
+                className="flex items-center justify-center gap-1.5 bg-[#0f2744] text-white px-4 py-3 sm:py-2.5 rounded-lg text-sm sm:text-xs font-semibold hover:bg-[#1a3a60] transition-colors w-full sm:w-auto disabled:opacity-60"
               >
                 <Send size={14} />
                 Send Campaign
@@ -205,22 +207,42 @@ function PromoCard({ promo, dimmed, onSend }: { promo: Promotion; dimmed?: boole
 export default function PromotionsClient({ initialPromos, totalCustomers }: { initialPromos: Promotion[]; totalCustomers: number }) {
   const [promos, setPromos] = useState<Promotion[]>(initialPromos);
   const [showModal, setShowModal] = useState(false);
-  const [, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
+  const [toast, setToast] = useState<ToastMessage | null>(null);
+  const dismissToast = useCallback(() => setToast(null), []);
 
   const active = promos.filter(p => p.status === 'active');
   const expired = promos.filter(p => p.status === 'expired');
 
   function handleSendCampaign(id: string) {
-    setPromos(prev =>
-      prev.map(p => p.id === id ? { ...p, sentCount: totalCustomers } : p)
-    );
     startTransition(async () => {
-      await sendCampaign(id, totalCustomers);
+      const result = await sendCampaign(id);
+      if (result.sent > 0) {
+        setPromos(prev =>
+          prev.map(p => p.id === id ? { ...p, sentCount: result.sent } : p)
+        );
+      }
+      if (result.failed === 0) {
+        setToast({ type: 'success', title: `Campaign sent to ${result.sent} customer${result.sent === 1 ? '' : 's'}` });
+      } else if (result.sent === 0) {
+        setToast({
+          type: 'error',
+          title: `Failed to send campaign`,
+          detail: result.errors[0],
+        });
+      } else {
+        setToast({
+          type: 'error',
+          title: `${result.sent} sent, ${result.failed} failed`,
+          detail: result.errors[0],
+        });
+      }
     });
   }
 
   return (
     <div className="p-4 sm:p-8">
+      {toast && <Toast toast={toast} onClose={dismissToast} />}
       {showModal && (
         <CreatePromoModal
           onClose={() => setShowModal(false)}
@@ -252,7 +274,7 @@ export default function PromotionsClient({ initialPromos, totalCustomers }: { in
           </div>
           <div className="space-y-3">
             {active.map(p => (
-              <PromoCard key={p.id} promo={p} onSend={() => handleSendCampaign(p.id)} />
+              <PromoCard key={p.id} promo={p} onSend={() => handleSendCampaign(p.id)} sendDisabled={isPending} />
             ))}
           </div>
         </section>

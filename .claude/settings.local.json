@@ -3,7 +3,13 @@
     "allow": [
       "Bash(npm install:*)",
       "Bash(npx tsc:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(supabase --version)",
+      "Bash(curl -s -X POST \"https://gtikzsiyktbtptvisxnw.supabase.co/rest/v1/customers\" -H \"apikey: sb_publishable_m5eC99DSS_WBs2Uwr6h3uw_nzeSYgkN\" -H \"Authorization: Bearer sb_publishable_m5eC99DSS_WBs2Uwr6h3uw_nzeSYgkN\" -H \"Content-Type: application/json\" -H \"Prefer: return=minimal\" -d '[:*)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(curl:*)",
+      "Bash(python3:*)",
+      "Bash(xargs ls:*)"
     ]
   }
 }

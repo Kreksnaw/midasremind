@@ -2,6 +2,7 @@
 
 import { createClient } from './supabase';
 import { revalidatePath } from 'next/cache';
+import { sendSMS } from './twilio';
 import type { Customer, Reminder, Promotion } from '@/app/data/sample';
 
 // ── Type helpers ────────────────────────────────────────────────────────────
@@ -149,26 +150,70 @@ export async function getReminders(): Promise<Reminder[]> {
   return (data as DbReminder[]).map(mapReminder);
 }
 
-export async function sendReminder(id: string): Promise<void> {
+export async function sendReminder(id: string): Promise<{ success: boolean; error?: string }> {
   const supabase = createClient();
+
+  const { data: row, error: fetchErr } = await supabase
+    .from('reminders')
+    .select('*')
+    .eq('id', id)
+    .single();
+  if (fetchErr || !row) return { success: false, error: fetchErr?.message ?? 'Reminder not found.' };
+
+  const reminder = row as DbReminder;
+  const message =
+    `Hi ${reminder.customer_name}, your ${reminder.service_type} at Midas Sunnyvale is due. ` +
+    `Call us at (408) 498-7075 or visit us at 725 E El Camino Real to schedule. Reply STOP to opt out.`;
+
+  const smsResult = await sendSMS(reminder.phone, message);
+  if (!smsResult.success) return smsResult;
+
   const today = new Date().toISOString().split('T')[0];
   const { error } = await supabase
     .from('reminders')
     .update({ status: 'sent', sent_at: today })
     .eq('id', id);
-  if (error) throw new Error(error.message);
+  if (error) return { success: false, error: error.message };
+
   revalidatePath('/reminders');
+  return { success: true };
 }
 
-export async function sendAllPendingReminders(): Promise<void> {
+export async function sendAllPendingReminders(): Promise<{ sent: number; failed: number; errors: string[] }> {
   const supabase = createClient();
-  const today = new Date().toISOString().split('T')[0];
-  const { error } = await supabase
+
+  const { data, error: fetchErr } = await supabase
     .from('reminders')
-    .update({ status: 'sent', sent_at: today })
+    .select('*')
     .eq('status', 'pending');
-  if (error) throw new Error(error.message);
+  if (fetchErr) throw new Error(fetchErr.message);
+
+  const reminders = (data ?? []) as DbReminder[];
+  const today = new Date().toISOString().split('T')[0];
+  let sent = 0;
+  let failed = 0;
+  const errors: string[] = [];
+
+  for (const reminder of reminders) {
+    const message =
+      `Hi ${reminder.customer_name}, your ${reminder.service_type} at Midas Sunnyvale is due. ` +
+      `Call us at (408) 498-7075 or visit us at 725 E El Camino Real to schedule. Reply STOP to opt out.`;
+
+    const smsResult = await sendSMS(reminder.phone, message);
+    if (smsResult.success) {
+      await supabase
+        .from('reminders')
+        .update({ status: 'sent', sent_at: today })
+        .eq('id', reminder.id);
+      sent++;
+    } else {
+      failed++;
+      errors.push(`${reminder.customer_name}: ${smsResult.error}`);
+    }
+  }
+
   revalidatePath('/reminders');
+  return { sent, failed, errors };
 }
 
 // ── Promotions ───────────────────────────────────────────────────────────────
@@ -210,14 +255,47 @@ export async function createPromotion(promo: {
   return mapPromotion(data as DbPromotion);
 }
 
-export async function sendCampaign(id: string, customerCount: number): Promise<void> {
+export async function sendCampaign(id: string): Promise<{ sent: number; failed: number; errors: string[] }> {
   const supabase = createClient();
-  const { error } = await supabase
+
+  const { data: promoRow, error: promoErr } = await supabase
     .from('promotions')
-    .update({ customers_sent: customerCount })
-    .eq('id', id);
-  if (error) throw new Error(error.message);
+    .select('*')
+    .eq('id', id)
+    .single();
+  if (promoErr || !promoRow) throw new Error(promoErr?.message ?? 'Promotion not found.');
+
+  const promo = promoRow as DbPromotion;
+
+  const { data: customers, error: custErr } = await supabase
+    .from('customers')
+    .select('name, phone');
+  if (custErr) throw new Error(custErr.message);
+
+  let sent = 0;
+  let failed = 0;
+  const errors: string[] = [];
+
+  for (const customer of (customers ?? []) as { name: string; phone: string }[]) {
+    const smsResult = await sendSMS(customer.phone, promo.message);
+    if (smsResult.success) {
+      sent++;
+    } else {
+      failed++;
+      errors.push(`${customer.name}: ${smsResult.error}`);
+    }
+  }
+
+  if (sent > 0) {
+    const { error } = await supabase
+      .from('promotions')
+      .update({ customers_sent: sent })
+      .eq('id', id);
+    if (error) throw new Error(error.message);
+  }
+
   revalidatePath('/promotions');
+  return { sent, failed, errors };
 }
 
 // ── Shop Settings ─────────────────────────────────────────────────────────────
