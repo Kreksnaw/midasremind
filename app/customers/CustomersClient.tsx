@@ -41,11 +41,11 @@ function AddCustomerModal({ onClose, onAdd }: { onClose: () => void; onAdd: (c: 
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+    <div className="fixed inset-0 z-50 flex flex-col sm:items-center sm:justify-center sm:p-4">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-white w-full sm:max-w-lg sm:mx-4 sm:rounded-2xl rounded-t-2xl shadow-2xl flex flex-col max-h-[92vh] sm:max-h-[90vh]">
-        {/* Sticky header */}
-        <div className="bg-[#0f2744] px-5 py-4 flex items-center justify-between rounded-t-2xl shrink-0">
+      <div className="relative bg-white w-full flex-1 sm:flex-none sm:max-w-lg sm:rounded-2xl sm:max-h-[90vh] shadow-2xl flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="bg-[#0f2744] px-5 py-4 flex items-center justify-between sm:rounded-t-2xl shrink-0">
           <div>
             <h2 className="text-base sm:text-lg font-semibold text-white">Add New Customer</h2>
             <p className="text-blue-300 text-xs mt-0.5">Fill in the customer details below</p>
@@ -56,14 +56,14 @@ function AddCustomerModal({ onClose, onAdd }: { onClose: () => void; onAdd: (c: 
         </div>
 
         {/* Scrollable form body */}
-        <div className="overflow-y-auto">
+        <div className="overflow-y-auto flex-1">
           <form onSubmit={handleSubmit} className="p-5 space-y-4">
             <div>
               <label className={labelCls}>Full Name</label>
               <input required className={inputCls} value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. John Smith" />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className={labelCls}>Phone</label>
                 <input required className={inputCls} value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} placeholder="(408) 555-0000" />
@@ -77,13 +77,13 @@ function AddCustomerModal({ onClose, onAdd }: { onClose: () => void; onAdd: (c: 
             <div>
               <label className={labelCls}>Vehicle</label>
               <div className="grid grid-cols-3 gap-2 mt-1">
-                <input required className="border border-slate-200 rounded-lg px-2.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value={form.year} onChange={e => setForm(f => ({ ...f, year: e.target.value }))} placeholder="Year" />
-                <input required className="border border-slate-200 rounded-lg px-2.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value={form.make} onChange={e => setForm(f => ({ ...f, make: e.target.value }))} placeholder="Make" />
-                <input required className="border border-slate-200 rounded-lg px-2.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value={form.model} onChange={e => setForm(f => ({ ...f, model: e.target.value }))} placeholder="Model" />
+                <input required className="border border-slate-200 rounded-lg px-2.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500" value={form.year} onChange={e => setForm(f => ({ ...f, year: e.target.value }))} placeholder="Year" />
+                <input required className="border border-slate-200 rounded-lg px-2.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500" value={form.make} onChange={e => setForm(f => ({ ...f, make: e.target.value }))} placeholder="Make" />
+                <input required className="border border-slate-200 rounded-lg px-2.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500" value={form.model} onChange={e => setForm(f => ({ ...f, model: e.target.value }))} placeholder="Model" />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className={labelCls}>Last Service Date</label>
                 <input type="date" required className={inputCls} value={form.lastServiceDate} onChange={e => setForm(f => ({ ...f, lastServiceDate: e.target.value }))} />

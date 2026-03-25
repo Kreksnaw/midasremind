@@ -142,7 +142,7 @@ export default function RemindersClient({ initialReminders }: { initialReminders
                   <button
                     onClick={() => handleSendNow(r.id)}
                     disabled={isPending}
-                    className="flex items-center justify-center gap-1.5 w-full sm:w-auto bg-[#0f2744] text-white px-4 py-2.5 rounded-lg text-xs font-semibold hover:bg-[#1a3a60] transition-colors disabled:opacity-60"
+                    className="flex items-center justify-center gap-1.5 w-full sm:w-auto bg-[#0f2744] text-white px-4 py-3 sm:py-2.5 rounded-lg text-sm sm:text-xs font-semibold hover:bg-[#1a3a60] transition-colors disabled:opacity-60"
                   >
                     <Send size={13} />
                     Send Now

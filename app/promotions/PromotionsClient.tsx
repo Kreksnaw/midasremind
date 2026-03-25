@@ -40,11 +40,11 @@ function CreatePromoModal({ onClose, onAdd }: { onClose: () => void; onAdd: (p: 
   const promoLabelCls = "text-xs font-medium text-slate-500 uppercase tracking-wide";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+    <div className="fixed inset-0 z-50 flex flex-col sm:items-center sm:justify-center sm:p-4">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-white w-full sm:max-w-lg sm:mx-4 sm:rounded-2xl rounded-t-2xl shadow-2xl flex flex-col max-h-[92vh] sm:max-h-[90vh]">
-        {/* Sticky header */}
-        <div className="bg-[#0f2744] px-5 py-4 flex items-center justify-between rounded-t-2xl shrink-0">
+      <div className="relative bg-white w-full flex-1 sm:flex-none sm:max-w-lg sm:rounded-2xl sm:max-h-[90vh] shadow-2xl flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="bg-[#0f2744] px-5 py-4 flex items-center justify-between sm:rounded-t-2xl shrink-0">
           <div>
             <h2 className="text-base sm:text-lg font-semibold text-white">Create Promotion</h2>
             <p className="text-blue-300 text-xs mt-0.5">Set up a new coupon campaign</p>
@@ -55,7 +55,7 @@ function CreatePromoModal({ onClose, onAdd }: { onClose: () => void; onAdd: (p: 
         </div>
 
         {/* Scrollable form body */}
-        <div className="overflow-y-auto">
+        <div className="overflow-y-auto flex-1">
           <form onSubmit={handleSubmit} className="p-5 space-y-4">
             <div>
               <label className={promoLabelCls}>Promotion Title</label>
@@ -186,12 +186,12 @@ function PromoCard({ promo, dimmed, onSend }: { promo: Promotion; dimmed?: boole
 
           {/* Send button */}
           {promo.status === 'active' && (
-            <div className="mt-3 pt-3 border-t border-slate-100 sm:border-0 sm:mt-0 sm:pt-0">
+            <div className="mt-3 pt-3 border-t border-slate-100">
               <button
                 onClick={onSend}
-                className="flex items-center justify-center sm:justify-start gap-1.5 bg-[#0f2744] text-white px-4 py-2.5 rounded-lg text-xs font-semibold hover:bg-[#1a3a60] transition-colors w-full sm:w-auto sm:ml-auto"
+                className="flex items-center justify-center gap-1.5 bg-[#0f2744] text-white px-4 py-3 sm:py-2.5 rounded-lg text-sm sm:text-xs font-semibold hover:bg-[#1a3a60] transition-colors w-full sm:w-auto"
               >
-                <Send size={12} />
+                <Send size={14} />
                 Send Campaign
               </button>
             </div>

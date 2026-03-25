@@ -20,13 +20,13 @@ const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'sat
 function SectionCard({ title, icon: Icon, children }: { title: string; icon: React.ElementType; children: React.ReactNode }) {
   return (
     <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-      <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+      <div className="px-4 sm:px-6 py-4 border-b border-slate-100 flex items-center gap-3">
         <div className="bg-slate-100 rounded-lg p-1.5">
           <Icon size={16} className="text-slate-600" />
         </div>
         <h2 className="font-semibold text-slate-800">{title}</h2>
       </div>
-      <div className="p-6">{children}</div>
+      <div className="p-4 sm:p-6">{children}</div>
     </div>
   );
 }

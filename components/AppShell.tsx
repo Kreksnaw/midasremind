@@ -61,7 +61,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       {/* ── Content column ── */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Mobile top bar */}
-        <header className="md:hidden sticky top-0 z-30 bg-[#0f2744] h-14 flex items-center px-4 gap-3 shrink-0 shadow-md">
+        <header className="md:hidden sticky top-0 z-30 bg-[#0f2744] safe-top flex items-center px-4 gap-3 shrink-0 shadow-md" style={{ minHeight: '56px' }}>
           <button
             onClick={() => setDrawerOpen(true)}
             className="text-white/80 hover:text-white transition-colors -ml-1 p-1"

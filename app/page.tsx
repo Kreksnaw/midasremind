@@ -74,7 +74,7 @@ export default async function DashboardPage() {
         <p className="text-slate-500 text-sm mt-1">Welcome back — here&apos;s what&apos;s happening at {shopName}.</p>
       </div>
 
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
         <StatCard label="Total Customers" value={customerCount ?? 0} icon={Users} sub="In your database" />
         <StatCard label="Reminders Sent" value={sentThisMonth} icon={Bell} sub="This month" dark />
         <StatCard label="Upcoming Due" value={upcomingDue} icon={CalendarClock} sub="Pending reminders" />
