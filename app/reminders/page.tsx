@@ -4,12 +4,12 @@ import type { Reminder } from '@/app/data/sample';
 
 export default async function RemindersPage() {
   const supabase = createClient();
-  const { data } = await supabase
-    .from('reminders')
-    .select('*')
-    .order('due_date', { ascending: true });
+  const [{ data: remindersData }, { data: customersData }] = await Promise.all([
+    supabase.from('reminders').select('*').order('due_date', { ascending: true }),
+    supabase.from('customers').select('id, name, phone').order('name', { ascending: true }),
+  ]);
 
-  const reminders: Reminder[] = (data ?? []).map((r) => ({
+  const reminders: Reminder[] = (remindersData ?? []).map((r) => ({
     id: r.id,
     customerId: r.customer_id,
     customerName: r.customer_name,
@@ -20,5 +20,7 @@ export default async function RemindersPage() {
     phone: r.phone,
   }));
 
-  return <RemindersClient initialReminders={reminders} />;
+  const customers: { id: string; name: string; phone: string }[] = customersData ?? [];
+
+  return <RemindersClient initialReminders={reminders} customers={customers} />;
 }

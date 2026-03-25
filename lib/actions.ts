@@ -150,6 +150,31 @@ export async function getReminders(): Promise<Reminder[]> {
   return (data as DbReminder[]).map(mapReminder);
 }
 
+export async function createReminder(reminder: {
+  customerId: string;
+  customerName: string;
+  phone: string;
+  serviceType: string;
+  dueDate: string;
+}): Promise<Reminder> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from('reminders')
+    .insert({
+      customer_id: reminder.customerId,
+      customer_name: reminder.customerName,
+      phone: reminder.phone,
+      service_type: reminder.serviceType,
+      due_date: reminder.dueDate,
+      status: 'pending',
+    })
+    .select()
+    .single();
+  if (error) throw new Error(error.message);
+  revalidatePath('/reminders');
+  return mapReminder(data as DbReminder);
+}
+
 export async function sendReminder(id: string): Promise<{ success: boolean; error?: string }> {
   const supabase = createClient();
 
