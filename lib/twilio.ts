@@ -12,18 +12,28 @@ export async function sendSMS(to: string, body: string): Promise<{ success: bool
   const authToken = process.env.TWILIO_AUTH_TOKEN;
   const fromNumber = process.env.TWILIO_PHONE_NUMBER;
 
+  console.log('[Twilio] sendSMS called');
+  console.log('[Twilio] TWILIO_ACCOUNT_SID:', accountSid ? `${accountSid.slice(0, 6)}...` : 'MISSING');
+  console.log('[Twilio] TWILIO_AUTH_TOKEN:', authToken ? '***set***' : 'MISSING');
+  console.log('[Twilio] TWILIO_PHONE_NUMBER:', fromNumber ?? 'MISSING');
+
   if (!accountSid || !authToken || !fromNumber) {
+    console.error('[Twilio] ERROR: Missing credentials — cannot send SMS');
     return { success: false, error: 'Twilio credentials are not configured.' };
   }
 
   const normalizedTo = normalizePhone(to);
+  console.log('[Twilio] Sending SMS to:', normalizedTo, '| from:', fromNumber);
+  console.log('[Twilio] Message body:', body);
 
   try {
     const client = twilio(accountSid, authToken);
-    await client.messages.create({ body, from: fromNumber, to: normalizedTo });
+    const msg = await client.messages.create({ body, from: fromNumber, to: normalizedTo });
+    console.log('[Twilio] SUCCESS — SID:', msg.sid, '| status:', msg.status);
     return { success: true };
   } catch (err: unknown) {
-    const twilioErr = err as { code?: number; message?: string };
+    const twilioErr = err as { code?: number; message?: string; status?: number };
+    console.error('[Twilio] ERROR — code:', twilioErr.code, '| status:', twilioErr.status, '| message:', twilioErr.message);
     // Error 21608: unverified number on trial account
     if (twilioErr.code === 21608) {
       return {

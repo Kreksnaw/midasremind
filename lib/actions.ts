@@ -176,6 +176,7 @@ export async function createReminder(reminder: {
 }
 
 export async function sendReminder(id: string): Promise<{ success: boolean; error?: string }> {
+  console.log('[sendReminder] Called with id:', id);
   const supabase = createClient();
 
   const { data: row, error: fetchErr } = await supabase
@@ -183,14 +184,22 @@ export async function sendReminder(id: string): Promise<{ success: boolean; erro
     .select('*')
     .eq('id', id)
     .single();
-  if (fetchErr || !row) return { success: false, error: fetchErr?.message ?? 'Reminder not found.' };
+  if (fetchErr || !row) {
+    console.error('[sendReminder] Failed to fetch reminder:', fetchErr?.message ?? 'not found');
+    return { success: false, error: fetchErr?.message ?? 'Reminder not found.' };
+  }
 
   const reminder = row as DbReminder;
+  console.log('[sendReminder] Reminder fetched — customer:', reminder.customer_name, '| phone:', reminder.phone, '| service:', reminder.service_type);
+
   const message =
     `Hi ${reminder.customer_name}, your ${reminder.service_type} at Midas Sunnyvale is due. ` +
     `Call us at (408) 498-7075 or visit us at 725 E El Camino Real to schedule. Reply STOP to opt out.`;
 
+  console.log('[sendReminder] Calling sendSMS...');
   const smsResult = await sendSMS(reminder.phone, message);
+  console.log('[sendReminder] sendSMS result:', smsResult);
+
   if (!smsResult.success) return smsResult;
 
   const today = new Date().toISOString().split('T')[0];
@@ -198,8 +207,12 @@ export async function sendReminder(id: string): Promise<{ success: boolean; erro
     .from('reminders')
     .update({ status: 'sent', sent_at: today })
     .eq('id', id);
-  if (error) return { success: false, error: error.message };
+  if (error) {
+    console.error('[sendReminder] Supabase update failed:', error.message);
+    return { success: false, error: error.message };
+  }
 
+  console.log('[sendReminder] Supabase updated to sent. Done.');
   revalidatePath('/reminders');
   return { success: true };
 }

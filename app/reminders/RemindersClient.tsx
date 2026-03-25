@@ -208,15 +208,23 @@ export default function RemindersClient({
   const dismissToast = useCallback(() => setToast(null), []);
 
   function handleSendNow(id: string) {
+    console.log('CLIENT: Send Now clicked for id:', id);
     startTransition(async () => {
-      const result = await sendReminder(id);
-      if (result.success) {
-        setReminders(prev =>
-          prev.map(r => r.id === id ? { ...r, status: 'sent', sentAt: today } : r)
-        );
-        setToast({ type: 'success', title: 'SMS sent successfully' });
-      } else {
-        setToast({ type: 'error', title: 'Failed to send SMS', detail: result.error });
+      try {
+        console.log('CLIENT: Calling sendReminder server action...');
+        const result = await sendReminder(id);
+        console.log('CLIENT: sendReminder result:', result);
+        if (result.success) {
+          setReminders(prev =>
+            prev.map(r => r.id === id ? { ...r, status: 'sent', sentAt: today } : r)
+          );
+          setToast({ type: 'success', title: 'SMS sent successfully' });
+        } else {
+          setToast({ type: 'error', title: 'Failed to send SMS', detail: result.error });
+        }
+      } catch (err) {
+        console.error('CLIENT: sendReminder threw an exception:', err);
+        setToast({ type: 'error', title: 'Unexpected error', detail: String(err) });
       }
     });
   }
