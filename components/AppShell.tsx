@@ -45,16 +45,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           drawerOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        {/* Close button inside drawer */}
-        <div className="absolute top-3.5 right-0 translate-x-full pr-0">
-          <button
-            onClick={() => setDrawerOpen(false)}
-            className="bg-[#0f2744] text-white rounded-r-lg p-2.5 shadow-lg"
-            aria-label="Close menu"
-          >
-            <X size={18} />
-          </button>
-        </div>
         <Sidebar onNavClick={() => setDrawerOpen(false)} />
       </aside>
 
@@ -63,11 +53,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         {/* Mobile top bar */}
         <header className="md:hidden sticky top-0 z-30 bg-[#0f2744] safe-top flex items-center px-4 gap-3 shrink-0 shadow-md" style={{ minHeight: '56px' }}>
           <button
-            onClick={() => setDrawerOpen(true)}
-            className="text-white/80 hover:text-white transition-colors -ml-1 p-1"
-            aria-label="Open menu"
+            onClick={() => setDrawerOpen(o => !o)}
+            className="text-white hover:text-white/80 transition-colors -ml-1 p-2.5 rounded-lg active:bg-white/10"
+            aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
           >
-            <Menu size={22} />
+            {drawerOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
           <div className="flex items-center gap-2">
             <div className="bg-[#e8a020] rounded-md p-1">
