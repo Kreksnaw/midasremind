@@ -145,18 +145,18 @@ export default function CustomersClient({ initialCustomers }: { initialCustomers
           <p className="text-slate-500 text-sm mt-0.5">{customers.length} customers in your database</p>
         </div>
         <div className="flex gap-2 sm:gap-3">
-          <button className="flex items-center gap-2 border border-slate-200 text-slate-600 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors bg-white shadow-sm">
+          <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 border border-slate-200 text-slate-600 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors bg-white shadow-sm">
             <Upload size={15} />
             <span className="hidden sm:inline">Upload CSV</span>
-            <span className="sm:hidden">CSV</span>
+            <span className="sm:hidden">Upload CSV</span>
           </button>
           <button
             onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 bg-[#0f2744] text-white px-3 sm:px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#1a3a60] transition-colors shadow-sm"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-[#0f2744] text-white px-3 sm:px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#1a3a60] transition-colors shadow-sm"
           >
             <UserPlus size={15} />
             <span className="hidden sm:inline">Add Customer</span>
-            <span className="sm:hidden">Add</span>
+            <span className="sm:hidden">Add Customer</span>
           </button>
         </div>
       </div>
