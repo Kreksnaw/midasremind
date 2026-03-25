@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
@@ -8,7 +9,6 @@ import {
   Bell,
   Tag,
   Settings,
-  Wrench,
   ChevronRight,
 } from 'lucide-react';
 
@@ -26,16 +26,15 @@ export default function Sidebar({ onNavClick }: { onNavClick?: () => void }) {
   return (
     <div className="w-64 bg-[#0f2744] flex flex-col h-full">
       {/* Logo / Brand */}
-      <div className="px-6 py-5 border-b border-white/10 shrink-0">
-        <div className="flex items-center gap-2.5">
-          <div className="bg-[#e8a020] rounded-lg p-1.5">
-            <Wrench size={18} className="text-white" />
-          </div>
-          <div>
-            <p className="text-white font-semibold text-sm leading-tight">MidasRemind</p>
-            <p className="text-blue-300 text-xs">Midas Sunnyvale</p>
-          </div>
-        </div>
+      <div className="px-5 py-4 border-b border-white/10 shrink-0">
+        <Image
+          src="/midas-logo.svg"
+          alt="Midas Auto Service"
+          width={148}
+          height={40}
+          priority
+          className="w-auto h-9"
+        />
       </div>
 
       {/* Navigation */}

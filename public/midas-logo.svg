@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 44" fill="none">
+  <!-- Emblem: bold M badge -->
+  <rect width="40" height="40" x="2" y="2" rx="8" fill="#e8a020"/>
+  <path d="M10 32V12l10 12 10-12v20" stroke="white" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+  <!-- Wordmark -->
+  <text x="52" y="28" font-family="'Arial Black', 'Arial', sans-serif" font-weight="900" font-size="21" fill="white" letter-spacing="1">MIDAS</text>
+  <text x="53" y="40" font-family="Arial, sans-serif" font-weight="400" font-size="9" fill="#93c5fd" letter-spacing="2.5">AUTO SERVICE</text>
+</svg>

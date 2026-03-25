@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Wrench } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
+import Image from 'next/image';
 import Sidebar from './Sidebar';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
@@ -59,12 +60,14 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           >
             {drawerOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
-          <div className="flex items-center gap-2">
-            <div className="bg-[#e8a020] rounded-md p-1">
-              <Wrench size={15} className="text-white" />
-            </div>
-            <p className="text-white font-semibold text-sm">MidasRemind</p>
-          </div>
+          <Image
+            src="/midas-logo.svg"
+            alt="Midas Auto Service"
+            width={120}
+            height={32}
+            priority
+            className="w-auto h-7"
+          />
         </header>
 
         {/* Page content */}
